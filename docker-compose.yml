@@ -1,0 +1,24 @@
+services:
+  distcc:
+    build:
+      context: .
+      dockerfile: Arch.Dockerfile
+    container_name: distcc-worker
+    volumes:
+      - ./cache:/cache
+    ports:
+      - "3632:3632"
+    environment:
+      DISTCC_LOG: /tmp/distcc.log
+      DISTCC_VERBOSE: "1"
+    command: >
+      sh -c "
+      distccd
+      --daemon
+      --no-detach
+      --verbose
+      --allow 192.168.0.0/16
+      --allow 172.16.0.0/16
+      --jobs $(nproc)
+      --log-stderr
+      "

@@ -29,20 +29,7 @@ RUN pacman -Syu --noconfirm && \
         libxext && \
     pacman -Scc --noconfirm
 
-# DistCC masquerade support
-RUN mkdir -p /usr/lib/distcc
-
-# Support for non arch distros
-RUN GVER=$(gcc -dumpversion | cut -d. -f1) && \
-	ln -s ../../bin/distcc /usr/lib/distcc/x86_64-linux-gnu-gcc && \
-	ln -s ../../bin/distcc /usr/lib/distcc/x86_64-linux-gnu-g++ && \
-	ln -s ../../bin/distcc /usr/lib/distcc/x86_64-linux-gnu-gcc-$GVER && \
-	ln -s ../../bin/distcc /usr/lib/distcc/x86_64-linux-gnu-g++-$GVER && \
-	ln -s /usr/bin/ccache /usr/lib/ccache/bin/x86_64-linux-gnu-gcc && \
-	ln -s /usr/bin/ccache /usr/lib/ccache/bin/x86_64-linux-gnu-g++ && \
-	ln -s /usr/bin/ccache /usr/lib/ccache/bin/x86_64-linux-gnu-gcc-$GVER && \
-	ln -s /usr/bin/ccache /usr/lib/ccache/bin/x86_64-linux-gnu-g++-$GVER
-
+RUN cd /usr/lib/ccache/ && ln -s ../../bin/ccache c++
 
 # Distcc user already exists in the arch ver
 RUN mkdir -p /cache && chown distcc:distcc /cache

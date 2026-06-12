@@ -29,10 +29,29 @@ RUN pacman -Syu --noconfirm && \
         libxext && \
     pacman -Scc --noconfirm
 
-RUN cd /usr/lib/ccache/ && ln -s ../../bin/ccache c++
+# DistCC masquerade support
+RUN mkdir -p /usr/lib/distcc
+
+# Support for non arch distros
+RUN cd /usr/lib/distcc/bin && \
+	ln -s ../../../bin/distcc x86_64-linux-gnu-c++ && \
+	ln -s ../../../bin/distcc x86_64-linux-gnu-g++ && \
+	ln -s ../../../bin/distcc x86_64-linux-gnu-gcc 
+
+RUN cd /usr/lib/distcc && \
+	ln -s ../../bin/distcc x86_64-linux-gnu-c++ && \
+	ln -s ../../bin/distcc x86_64-linux-gnu-g++ && \
+	ln -s ../../bin/distcc x86_64-linux-gnu-gcc 
+
+# ccache only, still under lib/ccache
+RUN \
+	ln -s /usr/bin/ccache /usr/lib/ccache/bin/x86_64-linux-gnu-gcc && \
+	ln -s /usr/bin/ccache /usr/lib/ccache/bin/x86_64-linux-gnu-g++ 
+
 
 # Distcc user already exists in the arch ver
-RUN mkdir -p /cache && chown distcc:distcc /cache
+
+RUN mkdir -p /cache && chown distcc: /cache
 
 # DistCC command whitelist
 RUN find /usr/lib/distcc -type l > /etc/distcc/DISTCC_CMDLIST
@@ -41,8 +60,13 @@ ENV DISTCC_CMDLIST=/etc/distcc/DISTCC_CMDLIST
 ENV CCACHE_DIR=/cache
 ENV PATH=/usr/lib/ccache/bin:$PATH
 
+# Early path, read MASQUERADING at https://www.distcc.org/man/distcc_1.html
+# this is to avoid the recursive problem (111)
+ENV PATH=/usr/lib/distcc/bin:$PATH
+
 USER distcc
 
 EXPOSE 3632
 
 CMD ["/bin/bash"]
+

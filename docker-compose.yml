@@ -9,7 +9,7 @@ services:
     environment:
       DISTCC_LOG: /tmp/distcc.log
       DISTCC_VERBOSE: "1"
-      DISTCC_SAVE_TEMPS: "1" # The error files are deleted on the server, but they should be available for the client to see shortly before exiting
+      DISTCC_SAVE_TEMPS: "0" # The error files are deleted on the server, but they should be available for the client to see shortly before exiting
       # In the rare case where errors literally differ from server and client, use this
     command: >
       sh -c "

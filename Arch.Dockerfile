@@ -58,11 +58,12 @@ RUN find /usr/lib/distcc -type l > /etc/distcc/DISTCC_CMDLIST
 
 ENV DISTCC_CMDLIST=/etc/distcc/DISTCC_CMDLIST
 ENV CCACHE_DIR=/cache
-ENV PATH=/usr/lib/ccache/bin:$PATH
 
 # Early path, read MASQUERADING at https://www.distcc.org/man/distcc_1.html
 # this is to avoid the recursive problem (111)
 ENV PATH=/usr/lib/distcc/bin:$PATH
+
+ENV PATH=/usr/lib/ccache/bin:$PATH
 
 USER distcc
 
